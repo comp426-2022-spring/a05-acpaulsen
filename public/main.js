@@ -1,65 +1,43 @@
-// Flip one coin and show coin image to match result when button clicked
-// Button coin flip element in div#single
 const coin = document.getElementById("coin")
-// Add event listener for coin button in div#single
 coin.addEventListener("click", flipCoin)
-// Set up an asynchronous function so that it will await a response.
 async function flipCoin() {
 // Build up the endpoint URL
     const endpoint = "app/flip/"
-// DOM knows what the URI is so that we don't have to hard code it.
     const url = document.baseURI+endpoint
-// This sends a GET request to the API endpoint and waits for a response
     await fetch(url)
-// This receives the response as JSON
   		    .then(function(response) {
     		    return response.json();
   		      })
-// This processes the JSON into DOM calls that replace the existing corresponding elements in index.html 
 			    .then(function(result) {
 				    console.log(result);
 				    document.getElementById("result").innerHTML = result.flip;
 				    document.getElementById("quarter").setAttribute("src", "assets/img/"+result.flip+".png");
 				  });
   };
-// Flip multiple coins and show coin images in table as well as summary results
-// Enter number and press button to activate coin flip series
-// The flip many coins form in div#multi 
 const coins = document.getElementById("coins")
-// Add event listener for coins form in div#multi
 coins.addEventListener("submit", flipCoins)
-// Create the submit handler that will run when the submit button ("Flip 'em!) is pressed.
 async function flipCoins(event) {
-// Because we are using an event, we need to remove the default browser event, which is a reload.
 	event.preventDefault();
-// Build up the endpoint URL
 	const endpoint = "app/flip/coins/"
 	const url = document.baseURI+endpoint
-// This extracts the data object from the form so we can run it through the FormData API
 	const formEvent = event.currentTarget
-// Give the data to FormData and wait for a response or log an error to console.
 	try {
 		const formData = new FormData(formEvent);
-// Hand the form data off to the function that is actually going to interact with the API.
 		const flips = await sendFlips({ url, formData });
 // Process the response and manipulate some elements in div#multi.
 		console.log(flips);
 // Present the summary information.
 		document.getElementById("heads").innerHTML = "Heads: "+flips.summary.heads;
 		document.getElementById("tails").innerHTML = "Tails: "+flips.summary.tails;
-// This calls a function what will make a list of coin images based on the array of coin flip results.
 // See below for coinList() function.
     document.getElementById("coinlist").innerHTML = coinList(flips.raw);
 	} catch (error) {
 		console.log(error);
 	}
 }
-// Guess a coin flip by making a selection and pressing the button.
-// This uses a form in div#guesscoin with a selector to input the value to be sent to the API.
 const call = document.getElementById("call")
 // Add event listener for coins form in div#guesscoin
 call.addEventListener("submit", flipCall)
-// Create the submit handler (just like before for div#multi.
 async function flipCall(event) {
 // Prevent the default reload on event.
 	event.preventDefault();
@@ -68,14 +46,11 @@ async function flipCall(event) {
 	const url = document.baseURI+endpoint
 // Extract the data from the form.
 	const formEvent = event.currentTarget
-// Give the data to FormData and wait for a response or log an error to console.
 	try {
 		const formData = new FormData(formEvent); 
-// Hand the form data off to the function that is actually going to interact with the API.
 		const results = await sendFlips({ url, formData });
-// Process the results.
 		console.log(results);
-// Present the text results
+//  the results
 		document.getElementById("choice").innerHTML = "Guess: "+results.call;
 		document.getElementById("actual").innerHTML = "Actual: "+results.flip;
 		document.getElementById("results").innerHTML = "Result: "+results.result;
@@ -153,14 +128,13 @@ function guessNav() {
   document.getElementById("guessnav").className = "active";
   document.getElementById("guesscoin").className = "active";
 } 
-// Make a list of coin images
-// This function takes an array of coin flip results and turns them into list elements with corresponding images.
-// This allows the DOM call above to put the list in the appropriate place and show a coin for each of the flips sent back from the server.
+// Makes a list of coin images
+
 function coinList(array) {
-  let text = "";
+  let words = "";
   let arrayLength = array.length
   for (let i = 0; i < arrayLength; i++) {
-    text += '<li><img src="assets/img/'+array[i]+'.png" class="bigcoin"></li>';
+    words += '<li><img src="assets/img/'+array[i]+'.png" class="bigcoin"></li>';
   }
-  return text
+  return words
 }
